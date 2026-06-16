@@ -7,25 +7,21 @@ type Story = {
   id: string;
   story: string;
   created_at: string;
+  patterns: string[] | null;
 };
 
 export default function Home() {
   const [story, setStory] = useState("");
   const [status, setStatus] = useState("");
+  const [patterns, setPatterns] = useState<string[]>([]);
   const [savedStories, setSavedStories] = useState<Story[]>([]);
 
   async function loadStories() {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("stories")
-      .select("id, story, created_at")
+      .select("id, story, created_at, patterns")
       .order("created_at", { ascending: false })
       .limit(3);
-
-    if (error) {
-      console.error(error);
-      setStatus("Error loading stories");
-      return;
-    }
 
     setSavedStories(data || []);
   }
@@ -33,11 +29,14 @@ export default function Home() {
   async function handleSubmit() {
     if (!story.trim()) return;
 
-    setStatus("Saving...");
+    setStatus("Saving story...");
+    setPatterns([]);
 
-    const { error } = await supabase
+    const { data: insertedStory, error } = await supabase
       .from("stories")
-      .insert([{ story }]);
+      .insert([{ story }])
+      .select("id")
+      .single();
 
     if (error) {
       console.error(error);
@@ -45,8 +44,38 @@ export default function Home() {
       return;
     }
 
-    setStatus("Story saved!");
+    setStatus("Finding emotional patterns...");
+
+    const response = await fetch("/api/patterns", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ story }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Patterns API error:", errorText);
+      setStatus("Error finding emotional patterns");
+      return;
+    }
+
+    const result = await response.json();
+    const foundPatterns = result.patterns || [];
+
+    setPatterns(foundPatterns);
+
+    if (insertedStory?.id) {
+      await supabase
+        .from("stories")
+        .update({ patterns: foundPatterns })
+        .eq("id", insertedStory.id);
+    }
+
+    setStatus("Resonance patterns found.");
     setStory("");
+
     await loadStories();
   }
 
@@ -73,6 +102,20 @@ export default function Home() {
 
         {status && <p className="mt-4 text-gray-600">{status}</p>}
 
+        {patterns.length > 0 && (
+          <div className="mt-6 border rounded-lg p-4">
+            <h2 className="text-xl font-semibold mb-3">
+              Emotional patterns
+            </h2>
+
+            <ul className="list-disc pl-5 space-y-2">
+              {patterns.map((pattern) => (
+                <li key={pattern}>{pattern}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {savedStories.length > 0 && (
           <div className="mt-8 space-y-4">
             <h2 className="text-xl font-semibold">
@@ -82,6 +125,19 @@ export default function Home() {
             {savedStories.map((item) => (
               <div key={item.id} className="border rounded-lg p-4">
                 <p className="text-gray-800">{item.story}</p>
+
+                {item.patterns && item.patterns.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {item.patterns.map((pattern) => (
+                      <span
+                        key={pattern}
+                        className="rounded-full border px-3 py-1 text-sm text-gray-600"
+                      >
+                        {pattern}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
