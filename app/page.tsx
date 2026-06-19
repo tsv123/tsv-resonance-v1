@@ -84,7 +84,7 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         <h1 className="text-4xl font-bold mb-4">The Story Vine</h1>
 
-        <p className="text-gray-600 mb-6">What's your story?</p>
+        <p className="text-gray-600 mb-6">What&apos;s your story?</p>
 
         <textarea
           value={story}
