@@ -15,6 +15,7 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [patterns, setPatterns] = useState<string[]>([]);
   const [savedStories, setSavedStories] = useState<Story[]>([]);
+  const vineName = "Today...";
 
   async function loadStories() {
     const { data } = await supabase
@@ -84,7 +85,9 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         <h1 className="text-4xl font-bold mb-4">The Story Vine</h1>
 
-        <p className="text-gray-600 mb-6">What&apos;s your story?</p>
+        <p className="mb-6 text-gray-600" aria-label="Vine name">
+          {vineName}
+        </p>
 
         <textarea
           value={story}
