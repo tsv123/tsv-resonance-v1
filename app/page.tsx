@@ -15,6 +15,7 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [patterns, setPatterns] = useState<string[]>([]);
   const [savedStories, setSavedStories] = useState<Story[]>([]);
+  const vineName = "Today...";
 
   async function loadStories() {
     const { data } = await supabase
@@ -84,7 +85,9 @@ export default function Home() {
       <div className="w-full max-w-2xl">
         <h1 className="text-4xl font-bold mb-4">The Story Vine</h1>
 
-        <p className="text-gray-600 mb-6">What's your story?</p>
+        <p className="mb-6 text-gray-600" aria-label="Vine name">
+          {vineName}
+        </p>
 
         <textarea
           value={story}
@@ -93,12 +96,27 @@ export default function Home() {
           placeholder="Share your story..."
         />
 
-        <button
-          onClick={handleSubmit}
-          className="mt-4 px-6 py-3 bg-black text-white rounded-lg"
-        >
-          Find Resonance
-        </button>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleSubmit}
+            className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-3 text-white"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            Write
+          </button>
+        </div>
 
         {status && <p className="mt-4 text-gray-600">{status}</p>}
 
