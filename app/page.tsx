@@ -93,12 +93,27 @@ export default function Home() {
           placeholder="Share your story..."
         />
 
-        <button
-          onClick={handleSubmit}
-          className="mt-4 px-6 py-3 bg-black text-white rounded-lg"
-        >
-          Find Resonance
-        </button>
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleSubmit}
+            className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-3 text-white"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+            Write
+          </button>
+        </div>
 
         {status && <p className="mt-4 text-gray-600">{status}</p>}
 
